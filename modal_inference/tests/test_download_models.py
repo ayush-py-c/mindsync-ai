@@ -35,14 +35,14 @@ def test_fetch_all_requires_repo(monkeypatch):
 
 def test_fetch_all_invokes_snapshot_download(monkeypatch):
     captured = {}
-    monkeypatch.setattr(config, "HF_TEXT_MODEL_REPO", "acme/moodify-text-emotion")
+    monkeypatch.setattr(config, "HF_TEXT_MODEL_REPO", "acme/mindsync-ai-text-emotion")
     monkeypatch.setattr(config, "HF_TOKEN", None)
     monkeypatch.setitem(sys.modules, "huggingface_hub", _fake_hf_hub(captured))
 
     models_dir = tempfile.mkdtemp()
     download_models.fetch_all(models_dir)
 
-    assert captured["repo_id"] == "acme/moodify-text-emotion"
+    assert captured["repo_id"] == "acme/mindsync-ai-text-emotion"
     assert captured["local_dir"] == os.path.join(models_dir, "text_emotion_model")
     assert os.path.isdir(captured["local_dir"])
     assert captured["token"] is None

@@ -458,13 +458,13 @@ sequenceDiagram
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/hoangsonww/Moodify-Emotion-Music-App.git
+   git clone https://github.com/ayush-py-c/mindsync-ai.git
    ```
 
 2. Navigate to the frontend directory:
 
    ```bash
-   cd /Moodify-Emotion-Music-App/frontend
+   cd /mindsync-ai/frontend
    ```
 
 3. Install the dependencies:
@@ -489,7 +489,7 @@ sequenceDiagram
    redeploy - `frontend/src/config.js` reads them at build time.
 
    Optionally, enable **Sentry** error + performance monitoring by also
-   setting `REACT_APP_SENTRY_DSN` (from the `unc-a4/moodify-app` project).
+   setting `REACT_APP_SENTRY_DSN` (from the `unc-a4/mindsync-ai-app` project).
    Leave it empty to disable — `frontend/src/index.js` only initialises the
    SDK when a DSN is present, so local dev and CI builds send nothing.
    `REACT_APP_SENTRY_ENVIRONMENT` and `REACT_APP_SENTRY_TRACES_SAMPLE_RATE`
@@ -541,4 +541,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 Happy coding! 🚀
 
-[🔝 Back to Top](#moodify-frontend)
+[🔝 Back to Top](#mindsync-ai-frontend)

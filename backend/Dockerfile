@@ -1,7 +1,7 @@
-# Moodify Django API image.
+# MindSync AI Django API image.
 #
 # Build context is the repository root (see docker-compose.yml / CI):
-#   docker build -f backend/Dockerfile -t moodify-backend .
+#   docker build -f backend/Dockerfile -t mindsync-ai-backend .
 #
 # There is no SQL database (MongoDB only), so no `migrate` step is needed.
 FROM python:3.11-slim

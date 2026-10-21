@@ -1,11 +1,11 @@
-# Moodify Backend (Django API)
+# MindSync AI Backend (Django API)
 
 <p align="center">
-  <img src="../images/moodify-logo.png" alt="Moodify" width="160" />
+  <img src="../images/mindsync-ai-logo.png" alt="MindSync AI" width="160" />
 </p>
 
 <p align="center">
-  Serverless <strong>Django REST API</strong> for Moodify. Owns
+  Serverless <strong>Django REST API</strong> for MindSync AI. Owns
   authentication, user profiles, mood / listening history, and proxies
   inference requests to the Modal ML service. Runs on Vercel against
   MongoDB Atlas — no SQL database, no in-process ML.
@@ -579,8 +579,8 @@ in your Vercel project's Environment Variables for production.
 | `JWT_SIGNING_KEY` | yes | **Must match Modal**'s `JWT_SIGNING_KEY` |
 | `JWT_ACCESS_TOKEN_DAYS` | no | Default 7 |
 | `JWT_REFRESH_TOKEN_DAYS` | no | Default 14 |
-| `WEBAUTHN_RP_ID` | no | Passkey Relying-Party id = the **frontend** bare domain (no scheme/port). Default `localhost`. Set to e.g. `moodify-app.vercel.app` in prod. |
-| `WEBAUTHN_RP_NAME` | no | Label in the OS passkey sheet. Default `Moodify`. |
+| `WEBAUTHN_RP_ID` | no | Passkey Relying-Party id = the **frontend** bare domain (no scheme/port). Default `localhost`. Set to e.g. `mindsync-ai-app.vercel.app` in prod. |
+| `WEBAUTHN_RP_NAME` | no | Label in the OS passkey sheet. Default `MindSync AI`. |
 | `WEBAUTHN_EXPECTED_ORIGINS` | no | Comma-separated full frontend origins allowed to finish a ceremony. Default `http://localhost:3000,http://localhost:3001`. |
 | `WEBAUTHN_CHALLENGE_TTL_SECONDS` | no | Lifetime of an in-flight ceremony challenge. Default `300`. |
 | `MODAL_INFERENCE_URL` | yes | URL printed by `modal deploy modal_app.py` |
@@ -594,7 +594,7 @@ in your Vercel project's Environment Variables for production.
 | `METRICS_TTL_DAYS` | no | Native TTL for raw metric events. Default `30`. |
 | `ADMIN_METRICS_TOKEN` | no | Bearer token that unlocks `GET /api/metrics/`. Falls back to `MODAL_SERVICE_TOKEN` so a single secret unlocks both `/metrics` surfaces. |
 | `CACHE_REDIS_URL` | no | If set, use Redis (e.g. Upstash) instead of LocMem cache |
-| `SENTRY_DSN` | no | Enable Sentry error + performance monitoring. Empty ⇒ SDK never initialises (local/CI stay offline). DSN from the `unc-a4/moodify-app` project. |
+| `SENTRY_DSN` | no | Enable Sentry error + performance monitoring. Empty ⇒ SDK never initialises (local/CI stay offline). DSN from the `unc-a4/mindsync-ai-app` project. |
 | `SENTRY_ENVIRONMENT` | no | Deploy-stage label on events. Default `production` (or `development` when `DEBUG=True`). |
 | `SENTRY_RELEASE` | no | Release/version tag for regression tracking. Auto-detected from git if unset. |
 | `SENTRY_TRACES_SAMPLE_RATE` | no | Fraction (0.0–1.0) of requests traced for performance. Default `0.1`. |
@@ -665,7 +665,7 @@ logs stop showing 404s.
 
 ```bash
 cd backend
-vercel link                                   # name the project, e.g. moodify-api
+vercel link                                   # name the project, e.g. mindsync-ai-api
 
 # Set every required env var. CLI prompts for the value of each.
 for v in SECRET_KEY DEBUG ALLOWED_HOSTS \
@@ -757,7 +757,7 @@ manual smoke-testing.
 
 ---
 
-> Part of the [Moodify](../README.md) monorepo.
+> Part of the [MindSync AI](../README.md) monorepo.
 > Inference: [`../modal_inference/README.md`](../modal_inference/README.md).
 > Web client: [`../frontend/README.md`](../frontend/README.md).
 > Mobile client: [`../mobile/README.md`](../mobile/README.md).

@@ -1,4 +1,4 @@
-"""MongoDB documents for the Moodify API.
+"""MongoDB documents for the MindSync AI API.
 
 This module is the single source of truth for ``UserProfile``;
 ``users/models.py`` re-exports it so both apps share one definition.

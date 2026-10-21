@@ -1,4 +1,4 @@
-"""Pytest configuration and shared fixtures for the Moodify backend.
+"""Pytest configuration and shared fixtures for the MindSync AI backend.
 
 The whole suite runs against an in-memory mongomock database, so no real
 MongoDB is required. The Modal inference proxy is mocked.
@@ -19,7 +19,7 @@ import mongoengine  # noqa: E402
 # mongomock instance shared by the whole test session.
 mongoengine.disconnect_all()
 mongoengine.connect(
-    "moodify_test",
+    "mindsync-ai_test",
     mongo_client_class=mongomock.MongoClient,
     uuidRepresentation="standard",
 )

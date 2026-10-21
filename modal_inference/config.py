@@ -1,7 +1,7 @@
-"""Central configuration for the Moodify Modal inference service.
+"""Central configuration for the MindSync AI Modal inference service.
 
 Values come from environment variables, which Modal injects from the
-``moodify-secrets`` Secret at runtime. See ``.env.example`` for the full
+``mindsync-ai-secrets`` Secret at runtime. See ``.env.example`` for the full
 list.
 
 Model assets:
@@ -18,9 +18,9 @@ Model assets:
 import os
 
 # --- Modal resource names -------------------------------------------------
-APP_NAME = "moodify-inference"
-MODELS_VOLUME_NAME = "moodify-models"
-SECRET_NAME = "moodify-secrets"
+APP_NAME = "mindsync-ai-inference"
+MODELS_VOLUME_NAME = "mindsync-ai-models"
+SECRET_NAME = "mindsync-ai-secrets"
 
 # --- Filesystem (inside the container) ------------------------------------
 # Bundled in the image (see modal_app.py add_local_dir).

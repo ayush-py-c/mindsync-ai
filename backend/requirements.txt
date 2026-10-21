@@ -1,4 +1,4 @@
-# Moodify Django API -- dependency set for the Vercel deployment.
+# MindSync AI Django API -- dependency set for the Vercel deployment.
 #
 # Deliberately excludes ALL machine-learning packages (torch, tensorflow,
 # transformers, librosa, opencv, moviepy, fer, facenet-pytorch, spotipy).

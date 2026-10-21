@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    # Add the project root (Moodify-Emotion-Music-App) to the Python path
+    # Add the project root (mindsync-ai) to the Python path
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.append(project_root)
 

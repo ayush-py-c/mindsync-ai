@@ -88,7 +88,7 @@ _DB_WARMING_RESPONSE = {
 # ---------------------------------------------------------------------------
 _REGISTER_BODY = _obj(
     properties={
-        "username": openapi.Schema(type=openapi.TYPE_STRING, example="moodify_user"),
+        "username": openapi.Schema(type=openapi.TYPE_STRING, example="mindsync-ai_user"),
         "email": openapi.Schema(type=openapi.TYPE_STRING, format="email",
                                 example="user@example.com"),
         "password": openapi.Schema(type=openapi.TYPE_STRING, format="password",
@@ -96,18 +96,18 @@ _REGISTER_BODY = _obj(
                                    example="hunter2-correct-horse"),
     },
     required=["username", "email", "password"],
-    example={"username": "moodify_user", "email": "user@example.com",
+    example={"username": "mindsync-ai_user", "email": "user@example.com",
              "password": "hunter2-correct-horse"},
 )
 
 _LOGIN_BODY = _obj(
     properties={
-        "username": openapi.Schema(type=openapi.TYPE_STRING, example="moodify_user"),
+        "username": openapi.Schema(type=openapi.TYPE_STRING, example="mindsync-ai_user"),
         "password": openapi.Schema(type=openapi.TYPE_STRING, format="password",
                                    example="hunter2-correct-horse"),
     },
     required=["username", "password"],
-    example={"username": "moodify_user", "password": "hunter2-correct-horse"},
+    example={"username": "mindsync-ai_user", "password": "hunter2-correct-horse"},
 )
 
 _REFRESH_BODY = _obj(
@@ -122,7 +122,7 @@ _REFRESH_BODY = _obj(
 
 _VERIFY_BODY = _obj(
     properties={
-        "username": openapi.Schema(type=openapi.TYPE_STRING, example="moodify_user"),
+        "username": openapi.Schema(type=openapi.TYPE_STRING, example="mindsync-ai_user"),
         "email": openapi.Schema(type=openapi.TYPE_STRING, format="email",
                                 example="user@example.com"),
     },
@@ -131,7 +131,7 @@ _VERIFY_BODY = _obj(
 
 _RESET_BODY = _obj(
     properties={
-        "username": openapi.Schema(type=openapi.TYPE_STRING, example="moodify_user"),
+        "username": openapi.Schema(type=openapi.TYPE_STRING, example="mindsync-ai_user"),
         "new_password": openapi.Schema(type=openapi.TYPE_STRING, format="password",
                                        minLength=MIN_PASSWORD_LENGTH,
                                        example="new-strong-password-123"),
@@ -171,7 +171,7 @@ _PROFILE_SCHEMA = _obj(
     properties={
         "id": openapi.Schema(type=openapi.TYPE_STRING,
                              example="65f3a1b2c4d5e6f7a8b9c0d1"),
-        "username": openapi.Schema(type=openapi.TYPE_STRING, example="moodify_user"),
+        "username": openapi.Schema(type=openapi.TYPE_STRING, example="mindsync-ai_user"),
         "email": openapi.Schema(type=openapi.TYPE_STRING, format="email",
                                 example="user@example.com"),
         "listening_history": openapi.Schema(
@@ -272,10 +272,10 @@ def _profile_for(request_user, user_id: str):
             schema=_obj(
                 properties={
                     "message": openapi.Schema(type=openapi.TYPE_STRING, example="Token is valid."),
-                    "username": openapi.Schema(type=openapi.TYPE_STRING, example="moodify_user"),
+                    "username": openapi.Schema(type=openapi.TYPE_STRING, example="mindsync-ai_user"),
                 },
             ),
-            examples={"application/json": {"message": "Token is valid.", "username": "moodify_user"}},
+            examples={"application/json": {"message": "Token is valid.", "username": "mindsync-ai_user"}},
         ),
         401: RESP_401,
     },
@@ -555,7 +555,7 @@ def reset_password(request):
             schema=_PROFILE_SCHEMA,
             examples={"application/json": {
                 "id": "65f3a1b2c4d5e6f7a8b9c0d1",
-                "username": "moodify_user",
+                "username": "mindsync-ai_user",
                 "email": "user@example.com",
                 "listening_history": [],
                 "mood_history": ["joy", "sadness", "calm"],

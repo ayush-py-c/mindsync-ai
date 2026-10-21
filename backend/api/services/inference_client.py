@@ -1,4 +1,4 @@
-"""HTTP client for the Moodify Modal inference service.
+"""HTTP client for the MindSync AI Modal inference service.
 
 Django no longer imports torch/transformers/etc. The ``text_emotion`` and
 ``music_recommendation`` views call the functions here, which proxy to the

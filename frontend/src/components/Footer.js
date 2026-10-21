@@ -40,7 +40,7 @@ const NAV_GROUPS = [
 const SOCIAL_LINKS = [
   {
     label: "GitHub",
-    href: "https://github.com/hoangsonww/Moodify-Emotion-Music-App",
+    href: "https://github.com/ayush-py-c/MindSync AI-Emotion-Music-App",
     Icon: GitHub,
   },
   {

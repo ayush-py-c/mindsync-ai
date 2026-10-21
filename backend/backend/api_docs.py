@@ -1,4 +1,4 @@
-"""Centralised drf-yasg schema helpers for Moodify's OpenAPI docs.
+"""Centralised drf-yasg schema helpers for MindSync AI's OpenAPI docs.
 
 This module owns the "shape" of every endpoint shown in Swagger / Redoc:
 
@@ -16,7 +16,7 @@ This module owns the "shape" of every endpoint shown in Swagger / Redoc:
 * **SCHEMA_HEADER** -- the long-form Markdown intro shown above the
   endpoint list on Swagger UI / Redoc. Covers auth flow, rate limit
   story, link to the Modal inference docs, etc.
-* **MoodifySchemaGenerator** -- a tiny drf-yasg ``OpenAPISchemaGenerator``
+* **MindSync AISchemaGenerator** -- a tiny drf-yasg ``OpenAPISchemaGenerator``
   subclass that injects the tag-level descriptions into the generated
   schema (drf-yasg doesn't ship a built-in way to set tag descriptions
   via the ``Info`` block alone).
@@ -275,7 +275,7 @@ RESP_429 = error_response(
 SCHEMA_HEADER = """
 ## Overview
 
-REST API for [**Moodify**](https://moodify-app.vercel.app/) -- an emotion-driven music recommendation app. The Django service you're looking at handles user accounts, profiles, history, and proxies a subset of ML inference calls. The heavy ML lifting (text / speech / face emotion detection + the Deezer-backed recommender + the recency-weighted personalisation model) lives in a separate [scale-to-zero **Modal**](https://modal.com) service. The two share a JWT signing key, so the same access token you get from `/users/login/` works against Modal too -- web and mobile clients upload audio / images **directly** to Modal to avoid round-tripping multi-megabyte bodies through Vercel.
+REST API for [**MindSync AI**](https://mindsync-ai-app.vercel.app/) -- an emotion-driven music recommendation app. The Django service you're looking at handles user accounts, profiles, history, and proxies a subset of ML inference calls. The heavy ML lifting (text / speech / face emotion detection + the Deezer-backed recommender + the recency-weighted personalisation model) lives in a separate [scale-to-zero **Modal**](https://modal.com) service. The two share a JWT signing key, so the same access token you get from `/users/login/` works against Modal too -- web and mobile clients upload audio / images **directly** to Modal to avoid round-tripping multi-megabyte bodies through Vercel.
 
 ## Authentication
 
@@ -298,7 +298,7 @@ Two layers sit in front of the Modal compute budget:
 | DRF throttling (`AnonRateThrottle`, `UserRateThrottle`) | Django | `60/min` anon, `240/min` user |
 | Sliding-window per-user limit | Modal | `45/min` general, `15/min` media |
 
-Both are tuned to never bite a real user -- only retry loops and scripted abuse trip them. See the [modal_inference README](https://github.com/hoangsonww/Moodify-Emotion-Music-App/blob/master/modal_inference/README.md#rate-limiting) for the full design.
+Both are tuned to never bite a real user -- only retry loops and scripted abuse trip them. See the [modal_inference README](https://github.com/ayush-py-c/MindSync AI-Emotion-Music-App/blob/master/modal_inference/README.md#rate-limiting) for the full design.
 
 ## Conventions
 
@@ -309,8 +309,8 @@ Both are tuned to never bite a real user -- only retry loops and scripted abuse 
 
 ## Useful links
 
-* Frontend: <https://moodify-app.vercel.app/>
-* Source: <https://github.com/hoangsonww/Moodify-Emotion-Music-App>
+* Frontend: <https://mindsync-ai-app.vercel.app/>
+* Source: <https://github.com/ayush-py-c/MindSync AI-Emotion-Music-App>
 * Modal inference service docs: see the `modal_inference/README.md`
 """
 
@@ -318,7 +318,7 @@ Both are tuned to never bite a real user -- only retry loops and scripted abuse 
 # ---------------------------------------------------------------------------
 # Schema generator -- injects per-tag descriptions into the output
 # ---------------------------------------------------------------------------
-class MoodifySchemaGenerator(OpenAPISchemaGenerator):
+class MindSync AISchemaGenerator(OpenAPISchemaGenerator):
     """Attach a description to every tag in the generated schema.
 
     drf-yasg picks up tag *names* automatically from each endpoint's

@@ -10,7 +10,7 @@ import reportWebVitals from "./reportWebVitals";
 // --- Error + performance monitoring (Sentry) ------------------------------
 // Opt-in: with no REACT_APP_SENTRY_DSN the SDK never initializes, so local
 // dev and CI builds send nothing to Sentry. The DSN and tunables come from
-// the build-time env (see frontend/.env.example). Project: unc-a4/moodify-app.
+// the build-time env (see frontend/.env.example). Project: unc-a4/mindsync-ai-app.
 const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
 if (SENTRY_DSN) {
   Sentry.init({

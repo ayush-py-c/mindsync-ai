@@ -1,4 +1,4 @@
-# Moodify Modal inference service -- NVIDIA GPU dependency set.
+# MindSync AI Modal inference service -- NVIDIA GPU dependency set.
 #
 # This is the FUTURE path documented in docs/PRODUCTION_REFACTOR_PLAN.md §7.
 # It is NOT used by the default CPU deployment. To switch to GPU:

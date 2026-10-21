@@ -1,4 +1,4 @@
-"""FastAPI application for the Moodify inference service.
+"""FastAPI application for the MindSync AI inference service.
 
 The app is built by ``build_app()``, which takes the three loaded model
 objects as arguments. Keeping construction separate from the Modal wiring
@@ -52,7 +52,7 @@ from schemas import (
     TextEmotionRequest,
 )
 
-logger = logging.getLogger("moodify.inference.service")
+logger = logging.getLogger("mindsync-ai.inference.service")
 
 # Per-media caches, keyed by sha256(upload bytes). Separate caches per
 # modality so they don't collide on a coincidental hash match (sha256
@@ -152,7 +152,7 @@ def _normalise_endpoint(request) -> str:
 
 def build_app(text_model, speech_model, facial_model) -> FastAPI:
     """Construct the inference FastAPI app around three loaded models."""
-    web_app = FastAPI(title="Moodify Inference", version="1.0.0")
+    web_app = FastAPI(title="MindSync AI Inference", version="1.0.0")
 
     # --- Metrics middleware ------------------------------------------------
     # Times every request, records to the in-process recorder AND
@@ -179,7 +179,7 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
         )
         start = time.perf_counter()
         status_code = 500
-        # The ``X-Moodify-Degraded`` header is set by inference handlers
+        # The ``X-MindSync AI-Degraded`` header is set by inference handlers
         # on the model-fallback path; the middleware reads it AFTER the
         # response object is built but BEFORE it's sent, which is the
         # only safe place (response.body is a one-shot stream).
@@ -188,7 +188,7 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
             response = await call_next(request)
             status_code = int(getattr(response, "status_code", 500))
             try:
-                degraded = response.headers.get("x-moodify-degraded") == "1"
+                degraded = response.headers.get("x-mindsync-ai-degraded") == "1"
             except Exception:  # noqa: BLE001
                 pass
             return response
@@ -324,14 +324,14 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
         Browsers and curl users hitting the root used to get
         ``{"detail":"Not Found"}`` from FastAPI. Return something
         friendlier with pointers to the docs and the rest of the
-        Moodify project so the bare URL is self-describing.
+        MindSync AI project so the bare URL is self-describing.
         """
         return {
-            "service": "moodify-inference",
+            "service": "mindsync-ai-inference",
             "version": "1.0.0",
             "status": "ok",
             "description": (
-                "Moodify ML inference service -- text / speech / face emotion "
+                "MindSync AI ML inference service -- text / speech / face emotion "
                 "detection + Deezer-backed music recommendations. Scale-to-zero "
                 "FastAPI app on Modal."
             ),
@@ -340,9 +340,9 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
                 "redoc":        "/redoc",
                 "openapi_json": "/openapi.json",
                 "health":       "/health",
-                "frontend":     "https://moodify-app.vercel.app",
-                "backend_api":  "https://moodify-emotion-music-app-backend.vercel.app",
-                "source":       "https://github.com/hoangsonww/Moodify-Emotion-Music-App",
+                "frontend":     "https://mindsync-ai-app.vercel.app",
+                "backend_api":  "https://mindsync-ai-emotion-music-app-backend.vercel.app",
+                "source":       "https://github.com/ayush-py-c/MindSync AI-Emotion-Music-App",
             },
             "endpoints": [
                 {"method": "GET",  "path": "/health",
@@ -516,7 +516,7 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
         if degraded:
             # Surfaced for the metrics middleware -- not part of the
             # public response contract.
-            response.headers["X-Moodify-Degraded"] = "1"
+            response.headers["X-MindSync AI-Degraded"] = "1"
         return EmotionResponse(
             emotion=emotion,
             recommendations=get_music_recommendation(emotion),
@@ -592,7 +592,7 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
                     media_cache.set(content_key, emotion)
 
         if degraded and response is not None:
-            response.headers["X-Moodify-Degraded"] = "1"
+            response.headers["X-MindSync AI-Degraded"] = "1"
         return EmotionResponse(
             emotion=emotion,
             recommendations=get_music_recommendation(emotion),

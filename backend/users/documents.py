@@ -24,7 +24,7 @@ from mongoengine import (
 
 
 class User(Document):
-    """A Moodify user account, stored in the ``users`` MongoDB collection."""
+    """A MindSync AI user account, stored in the ``users`` MongoDB collection."""
 
     # auto_create_index=False stops mongoengine from re-creating indexes
     # on every cold start (the right pattern for serverless: indexes are

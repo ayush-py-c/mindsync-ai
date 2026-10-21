@@ -1,4 +1,4 @@
-"""Vercel serverless entrypoint for the Moodify Django API.
+"""Vercel serverless entrypoint for the MindSync AI Django API.
 
 The Vercel project's Root Directory must be set to ``backend/``. The
 ``@vercel/python`` runtime detects the module-level ``app`` (a WSGI

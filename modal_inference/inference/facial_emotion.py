@@ -17,7 +17,7 @@ import config
 
 logger = logging.getLogger(__name__)
 
-# FER emits Ekman labels; normalise them to Moodify's emotion vocabulary.
+# FER emits Ekman labels; normalise them to MindSync AI's emotion vocabulary.
 _FER_LABEL_MAP = {
     "angry": "anger",
     "disgust": "disgust",

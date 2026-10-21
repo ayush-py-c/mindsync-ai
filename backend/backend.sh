@@ -10,7 +10,7 @@ function print_stage() {
     echo -e "${GREEN}--- $1 ---${NC}"
 }
 
-print_stage "Starting Django Backend for Moodify App"
+print_stage "Starting Django Backend for MindSync AI App"
 
 # Step 1: Check if Python and Django are installed
 if ! command -v python3 &> /dev/null; then

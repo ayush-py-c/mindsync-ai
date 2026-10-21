@@ -1,4 +1,4 @@
-# Moodify Modal inference service -- CPU dependency set.
+# MindSync AI Modal inference service -- CPU dependency set.
 #
 # PyTorch CPU wheels (torch + torchvision, the latter required by
 # facenet-pytorch) are installed separately in modal_app.py via

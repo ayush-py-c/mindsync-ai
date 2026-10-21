@@ -321,7 +321,7 @@ class TestMiddlewareIntegration:
         c = TC(app)
         r = c.post("/text_emotion", json={"text": "hi"}, headers=_svc_headers())
         assert r.status_code == 200
-        assert r.headers.get("X-Moodify-Degraded") == "1"
+        assert r.headers.get("X-MindSync AI-Degraded") == "1"
         # The newly-recorded event should have degraded=True.
         assert any(ev.get("degraded") for ev in fake_store.events)
 

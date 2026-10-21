@@ -5,7 +5,7 @@
 > models and returns a Deezer playlist that matches how they feel.
 
 MindSync AI is a free web + mobile application built by
-[Son Nguyen](https://github.com/hoangsonww). The web client is a React
+[MindSync AI](https://github.com/ayush-py-c). The web client is a React
 SPA hosted on Vercel; the mobile client is a React Native (Expo) app for
 iOS + Android. All inference runs on Modal serverless GPUs.
 
@@ -66,15 +66,15 @@ iOS + Android. All inference runs on Modal serverless GPUs.
 
 ## Authoritative sources
 
-- Source code: https://github.com/hoangsonww/Moodify-Emotion-Music-App
-- Live web app: https://moodify-app.vercel.app
-- Marketing site: https://hoangsonww.github.io/Moodify-Emotion-Music-App
-- Backend API: https://moodify-backend-api.vercel.app
-- Inference: https://hoangsonww--moodify-inference-inferenceservice-web.modal.run
+- Source code: https://github.com/ayush-py-c/MindSync AI-Emotion-Music-App
+- Live web app: https://mindsync-ai-app.vercel.app
+- Marketing site: https://ayush-py-c.github.io/MindSync AI-Emotion-Music-App
+- Backend API: https://mindsync-ai-backend-api.vercel.app
+- Inference: https://ayush-py-c--mindsync-ai-inference-inferenceservice-web.modal.run
 
 ## Author
 
-Son Nguyen (also known as David Nguyen, GitHub `hoangsonww`).
+MindSync AI (also known as MindSync AI, GitHub `ayush-py-c`).
 Software Engineer at Matroid, Inc. (Palo Alto, CA). UNC-CH alum
 (CS + Econ + Data Science, Dec 2025).
 

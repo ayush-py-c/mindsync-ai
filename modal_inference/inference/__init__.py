@@ -1,4 +1,4 @@
-"""Inference modules for the Moodify Modal service.
+"""Inference modules for the MindSync AI Modal service.
 
 Each model is a class loaded ONCE per container (via the Modal
 ``@modal.enter()`` lifecycle hook) and reused across requests -- the core

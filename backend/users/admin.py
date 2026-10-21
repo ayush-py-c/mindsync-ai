@@ -14,6 +14,6 @@ MongoDB Atlas and is still managed through the REST API.
 
 from django.contrib import admin
 
-admin.site.site_header = "Moodify Admin"
-admin.site.site_title = "Moodify Admin"
-admin.site.index_title = "Moodify Admin — local only"
+admin.site.site_header = "MindSync AI Admin"
+admin.site.site_title = "MindSync AI Admin"
+admin.site.index_title = "MindSync AI Admin — local only"

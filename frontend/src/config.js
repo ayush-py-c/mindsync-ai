@@ -15,8 +15,8 @@ const stripTrailingSlash = (url) => (url || "").replace(/\/+$/, "");
 
 export const API_URL =
   stripTrailingSlash(process.env.REACT_APP_API_URL) ||
-  "https://moodify-backend-api.vercel.app";
+  "https://mindsync-ai-backend-api.vercel.app";
 
 export const MODAL_API_URL =
   stripTrailingSlash(process.env.REACT_APP_MODAL_API_URL) ||
-  "https://hoangsonww--moodify-inference-inferenceservice-web.modal.run";
+  "https://ayush-py-c--mindsync-ai-inference-inferenceservice-web.modal.run";

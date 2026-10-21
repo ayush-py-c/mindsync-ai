@@ -1,4 +1,4 @@
-"""Moodify ML inference service -- Modal deployment.
+"""MindSync AI ML inference service -- Modal deployment.
 
 This service replaces in-process Django inference and the legacy Flask app
 (ai_ml/src/api/emotion_api.py). All emotion models are loaded ONCE per
@@ -28,7 +28,7 @@ import modal
 import config
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
-logger = logging.getLogger("moodify.inference")
+logger = logging.getLogger("mindsync-ai.inference")
 
 app = modal.App(config.APP_NAME)
 

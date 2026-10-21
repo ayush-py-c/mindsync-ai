@@ -201,7 +201,7 @@ def text_emotion(request):
         "tracks for the user's recurring mood via a recency-weighted "
         "affinity model + first-order Markov transitions. The blend is "
         "fully explainable — see the [Modal inference README]"
-        "(https://github.com/hoangsonww/Moodify-Emotion-Music-App/blob/master/modal_inference/README.md#personalization-model-lightweight-ml) "
+        "(https://github.com/ayush-py-c/MindSync AI-Emotion-Music-App/blob/master/modal_inference/README.md#personalization-model-lightweight-ml) "
         "for the formulas.\n\n"
         "**No auth required** — Django uses the shared service token "
         "to call Modal. DRF's `AnonRateThrottle` (60/min) applies. "

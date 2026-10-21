@@ -1,4 +1,4 @@
-"""Django settings for the Moodify API.
+"""Django settings for the MindSync AI API.
 
 Production target: Vercel serverless. There is no SQL database -- all
 persistence is in MongoDB Atlas via mongoengine, and authentication is
@@ -25,7 +25,7 @@ JWT_SIGNING_KEY = config("JWT_SIGNING_KEY", default=SECRET_KEY)
 
 # --- Error monitoring (Sentry) --------------------------------------------
 # Streams unhandled exceptions + a sampled slice of performance traces to
-# Sentry (project: unc-a4/moodify-app). Entirely opt-in: with no SENTRY_DSN
+# Sentry (project: unc-a4/mindsync-ai-app). Entirely opt-in: with no SENTRY_DSN
 # the SDK never initializes, so local dev and CI stay fully offline. The
 # [django] extra auto-wires request/exception capture -- no middleware edits.
 _SENTRY_DSN = config("SENTRY_DSN", default="")
@@ -250,14 +250,14 @@ JWT_REFRESH_TOKEN_DAYS = config("JWT_REFRESH_TOKEN_DAYS", default=14, cast=int)
 # the page origin is not same-site with the RP ID, so for split
 # frontend/backend deploys these must point at the frontend.
 #
-#   WEBAUTHN_RP_ID          bare domain, no scheme/port  (e.g. moodify-app.vercel.app)
+#   WEBAUTHN_RP_ID          bare domain, no scheme/port  (e.g. mindsync-ai-app.vercel.app)
 #   WEBAUTHN_RP_NAME        human label shown in the OS passkey sheet
 #   WEBAUTHN_EXPECTED_ORIGINS  comma-separated full origins allowed to finish
 #                              a ceremony (scheme + host + optional port). Supports
 #                              several so prod + localhost dev can share a build.
 #   WEBAUTHN_CHALLENGE_TTL_SECONDS  how long a begun ceremony stays valid.
 WEBAUTHN_RP_ID = config("WEBAUTHN_RP_ID", default="localhost")
-WEBAUTHN_RP_NAME = config("WEBAUTHN_RP_NAME", default="Moodify")
+WEBAUTHN_RP_NAME = config("WEBAUTHN_RP_NAME", default="MindSync AI")
 WEBAUTHN_EXPECTED_ORIGINS = [
     o.strip()
     for o in config(

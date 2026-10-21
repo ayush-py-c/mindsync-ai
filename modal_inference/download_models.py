@@ -1,4 +1,4 @@
-"""Model-weight setup for the Moodify Modal service.
+"""Model-weight setup for the MindSync AI Modal service.
 
 Assembles the fine-tuned text-emotion model on the Modal Volume from two
 sources: large ``model.safetensors`` weights come from the configured

@@ -16,24 +16,24 @@ from django.urls import path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-from .api_docs import SCHEMA_HEADER, MoodifySchemaGenerator
+from .api_docs import SCHEMA_HEADER, MindSync AISchemaGenerator
 
 # --- Schema generator -----------------------------------------------------
 schema_view = get_schema_view(
     openapi.Info(
-        title="Moodify Emotion-Based Music API",
+        title="MindSync AI Emotion-Based Music API",
         default_version="v1",
         description=SCHEMA_HEADER,
-        terms_of_service="https://moodify-app.vercel.app/terms-of-service",
+        terms_of_service="https://mindsync-ai-app.vercel.app/terms-of-service",
         contact=openapi.Contact(
             email="hoangson091104@gmail.com",
-            name="Moodify",
-            url="https://moodify-app.vercel.app/",
+            name="MindSync AI",
+            url="https://mindsync-ai-app.vercel.app/",
         ),
         license=openapi.License(name="MIT License"),
     ),
     public=True,
-    generator_class=MoodifySchemaGenerator,
+    generator_class=MindSync AISchemaGenerator,
 )
 
 # --- CDN assets -----------------------------------------------------------
@@ -53,7 +53,7 @@ def swagger_ui(request):
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Moodify API - Swagger</title>
+  <title>MindSync AI API - Swagger</title>
   <link rel="icon" type="image/svg+xml" href="{_FAVICON_URL}">
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{_SWAGGER_UI_VERSION}/swagger-ui.css">
@@ -87,7 +87,7 @@ def redoc_ui(request):
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Moodify API - Redoc</title>
+  <title>MindSync AI API - Redoc</title>
   <link rel="icon" type="image/svg+xml" href="{_FAVICON_URL}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>body {{ margin: 0; }}</style>

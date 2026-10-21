@@ -1,11 +1,11 @@
-# Moodify ML Inference Service
+# MindSync AI ML Inference Service
 
 <p align="center">
-  <img src="../images/moodify-logo.png" alt="Moodify" width="160" />
+  <img src="../images/mindsync-ai-logo.png" alt="MindSync AI" width="160" />
 </p>
 
 <p align="center">
-  Standalone serverless ML inference service for Moodify, deployed on
+  Standalone serverless ML inference service for MindSync AI, deployed on
   <a href="https://modal.com"><strong>Modal</strong></a>. Hosts three
   emotion-recognition models (text, speech, face), drives a Deezer-backed
   music recommender, and feeds a <strong>Thompson-Sampling contextual
@@ -123,8 +123,8 @@ flowchart LR
             Reco["music_recommendation"]
             Pers["personalization"]
         end
-        Vol[("Modal Volume<br/>moodify-models")]
-        Secret[("Modal Secret<br/>moodify-secrets")]
+        Vol[("Modal Volume<br/>mindsync-ai-models")]
+        Secret[("Modal Secret<br/>mindsync-ai-secrets")]
     end
 
     HF["Hugging Face Hub<br/>(text model weights)"]
@@ -305,7 +305,7 @@ flowchart TD
 
 ## Reinforcement-learning personalization (Thompson Sampling bandit)
 
-Moodify learns from every user interaction. Each 👍 / 👎 (toggleable, and
+MindSync AI learns from every user interaction. Each 👍 / 👎 (toggleable, and
 reversible via an un-vote) / open-in-Deezer tap on a track card becomes
 training signal that **personalises the ranking of every subsequent
 recommendation list for that user specifically** — no global re-train, no
@@ -833,7 +833,7 @@ modal_inference/
 
 ## Configuration
 
-All values come from a single Modal Secret named `moodify-secrets`,
+All values come from a single Modal Secret named `mindsync-ai-secrets`,
 which is mounted as environment variables at runtime. Local development
 loads the same names from `modal_inference/.env`.
 
@@ -907,8 +907,8 @@ pip install modal
 modal token new                                    # browser auth
 
 # 1. One-time: create the secret.
-modal secret create moodify-secrets \
-  HF_TEXT_MODEL_REPO=<your-hf-username>/moodify-text-emotion \
+modal secret create mindsync-ai-secrets \
+  HF_TEXT_MODEL_REPO=<your-hf-username>/mindsync-ai-text-emotion \
   HF_TOKEN= \
   JWT_SIGNING_KEY=<shared with Django> \
   MODAL_SERVICE_TOKEN=<shared with Django> \
@@ -919,7 +919,7 @@ modal run modal_app.py::download_models
 
 # 3. Deploy.
 modal deploy modal_app.py
-# Prints:  https://<you>--moodify-inference-inferenceservice-web.modal.run
+# Prints:  https://<you>--mindsync-ai-inference-inferenceservice-web.modal.run
 
 # 4. Smoke test.
 curl https://<YOUR_URL>/health
@@ -990,7 +990,7 @@ network. The full suite is for local pre-deploy verification.
 
 | Signal | Where |
 |---|---|
-| Container logs | `modal app logs moodify-inference` |
+| Container logs | `modal app logs mindsync-ai-inference` |
 | Per-call metrics (Modal-native) | Modal dashboard → app → Functions tab |
 | Cold-start traces | dashboard → "Snapshot created / restored" log lines |
 | Health + cache + rate-limit stats | `GET /health` |
@@ -1000,13 +1000,13 @@ network. The full suite is for local pre-deploy verification.
 Useful log greps:
 
 ```bash
-modal app logs moodify-inference | grep "Deezer search failed"
-modal app logs moodify-inference | grep "Failed to load"
-modal app logs moodify-inference | grep "degraded"
+modal app logs mindsync-ai-inference | grep "Deezer search failed"
+modal app logs mindsync-ai-inference | grep "Failed to load"
+modal app logs mindsync-ai-inference | grep "degraded"
 # Spot rate-limit blocks:
-modal app logs moodify-inference | grep "Rate limit exceeded"
+modal app logs mindsync-ai-inference | grep "Rate limit exceeded"
 # Spot oversized uploads:
-modal app logs moodify-inference | grep "Upload too large"
+modal app logs mindsync-ai-inference | grep "Upload too large"
 ```
 
 To watch the cache warm up live (useful right after a redeploy):
@@ -1264,7 +1264,7 @@ the pipeline is source-agnostic.
 **Why CPU not GPU?** The biggest model in the stack is BERT-base
 (~110M parameters). Inference on a single sentence runs in ~30 ms on
 CPU. GPU would cost 10× more per second and would only help if you
-batched requests, which Moodify doesn't (each user analyses one input
+batched requests, which MindSync AI doesn't (each user analyses one input
 at a time).
 
 **Why split inference out of Django at all?** See [§Why it exists](#why-it-exists-vs-in-process-django).

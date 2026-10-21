@@ -1,1 +1,1 @@
-"""Music recommendation for the Moodify Modal service."""
+"""Music recommendation for the MindSync AI Modal service."""

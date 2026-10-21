@@ -72,7 +72,7 @@ def _rp_id() -> str:
 
 
 def _rp_name() -> str:
-    return getattr(settings, "WEBAUTHN_RP_NAME", "Moodify")
+    return getattr(settings, "WEBAUTHN_RP_NAME", "MindSync AI")
 
 
 def _expected_origins():
@@ -358,7 +358,7 @@ _LOGIN_BEGIN_BODY = _obj(
         "`PublicKeyCredentialRequestOptions` for `navigator.credentials.get()` "
         "plus a `flowId`. Pass a `username` to scope the prompt to one "
         "account, or omit it for a usernameless prompt that lets the "
-        "authenticator offer any discoverable Moodify passkey. The response "
+        "authenticator offer any discoverable MindSync AI passkey. The response "
         "is identical whether or not the username exists, so it never "
         "discloses account existence."
     ),

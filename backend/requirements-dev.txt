@@ -1,4 +1,4 @@
-# Moodify Django API -- development / test dependencies.
+# MindSync AI Django API -- development / test dependencies.
 -r requirements.txt
 
 pytest==8.4.1

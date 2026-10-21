@@ -2,7 +2,7 @@
   "name": "MindSync AI - Emotion-Based Music Recommendations",
   "short_name": "MindSync AI",
   "description": "Detect your mood from text, voice or a selfie and get a Deezer playlist that matches how you feel.",
-  "author": "Son Nguyen",
+  "author": "MindSync AI",
   "version": "1.0.0",
   "id": "/",
   "start_url": "/?utm_source=pwa",
