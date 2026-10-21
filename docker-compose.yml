@@ -1,0 +1,144 @@
+# MindSync AI -- Local / Render / Railway deployment
+# -------------------------------------------------
+# Runs the full stack:
+#   - backend:     Django API (port 8000)
+#   - inference:   FastAPI ML inference service (port 8001)
+#   - mongodb:     MongoDB for user data + metrics (port 27017)
+#
+# Usage:
+#   docker compose up --build
+#
+# For production on Render/Railway:
+#   - Each service gets its own Dockerfile (backend/Dockerfile, modal_inference/Dockerfile.cpu)
+#   - Set environment variables via the platform UI (see .env.example files)
+#   - Railway: use railway.toml or the UI to define services
+#   - Render: use render.yaml or the dashboard
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: mindsync-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-emotion_based_music_db}
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: mindsync-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      # Core
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      # MongoDB
+      MONGO_DB_URI: mongodb://mongodb:27017
+      MONGO_DB_NAME: ${MONGO_DB_NAME:-emotion_based_music_db}
+      # JWT (must match inference service)
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY:-change-me-shared-with-inference}
+      JWT_ACCESS_TOKEN_DAYS: ${JWT_ACCESS_TOKEN_DAYS:-7}
+      JWT_REFRESH_TOKEN_DAYS: ${JWT_REFRESH_TOKEN_DAYS:-14}
+      # WebAuthn
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
+      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME:-MindSync AI}
+      WEBAUTHN_EXPECTED_ORIGINS: ${WEBAUTHN_EXPECTED_ORIGINS:-http://localhost:3000}
+      WEBAUTHN_CHALLENGE_TTL_SECONDS: ${WEBAUTHN_CHALLENGE_TTL_SECONDS:-300}
+      # Inference service (internal Docker network)
+      MODAL_INFERENCE_URL: http://inference:8001
+      MODAL_SERVICE_TOKEN: ${MODAL_SERVICE_TOKEN:-change-me-shared-with-inference}
+      # CORS (frontend origin)
+      CORS_ALLOW_ALL_ORIGINS: ${CORS_ALLOW_ALL_ORIGINS:-True}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      # Optional cache
+      CACHE_REDIS_URL: ${CACHE_REDIS_URL:-}
+      # Throttling
+      THROTTLE_ANON: ${THROTTLE_ANON:-60/min}
+      THROTTLE_USER: ${THROTTLE_USER:-240/min}
+      # Sentry (optional)
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      SENTRY_RELEASE: ${SENTRY_RELEASE:-}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.1}
+      SENTRY_SEND_PII: ${SENTRY_SEND_PII:-False}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  inference:
+    build:
+      context: .
+      dockerfile: modal_inference/Dockerfile.cpu
+    container_name: mindsync-inference
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      # Model weights (Hugging Face)
+      HF_TEXT_MODEL_REPO: ${HF_TEXT_MODEL_REPO:-}
+      HF_TOKEN: ${HF_TOKEN:-}
+      # Auth (must match backend)
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY:-change-me-shared-with-inference}
+      MODAL_SERVICE_TOKEN: ${MODAL_SERVICE_TOKEN:-change-me-shared-with-inference}
+      # CORS (frontend origin)
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      # Metrics (MongoDB)
+      METRICS_ENABLED: ${METRICS_ENABLED:-1}
+      MONGO_DB_URI: mongodb://mongodb:27017
+      MONGO_DB_NAME: ${MONGO_DB_NAME:-emotion_based_music_db}
+      METRICS_COLLECTION: ${METRICS_COLLECTION:-inference_metrics}
+      METRICS_TTL_DAYS: ${METRICS_TTL_DAYS:-30}
+      # Caching (all optional, have sensible defaults)
+      CACHE_DEEZER_TTL: ${CACHE_DEEZER_TTL:-3600}
+      CACHE_DEEZER_MAX: ${CACHE_DEEZER_MAX:-256}
+      CACHE_TEXT_TTL: ${CACHE_TEXT_TTL:-86400}
+      CACHE_TEXT_MAX: ${CACHE_TEXT_MAX:-2048}
+      CACHE_MEDIA_TTL: ${CACHE_MEDIA_TTL:-21600}
+      CACHE_MEDIA_MAX: ${CACHE_MEDIA_MAX:-256}
+      # Rate limiting (per-container in-memory)
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-1}
+      RATE_LIMIT_PER_USER: ${RATE_LIMIT_PER_USER:-45}
+      RATE_LIMIT_MEDIA_PER_USER: ${RATE_LIMIT_MEDIA_PER_USER:-15}
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-60}
+      # Scaling / resource limits (informational for docs)
+      CONTAINER_CPU: ${CONTAINER_CPU:-1.0}
+      CONTAINER_MEMORY_MB: ${CONTAINER_MEMORY_MB:-4096}
+      MAX_CONTAINERS: ${MAX_CONTAINERS:-5}
+    ports:
+      - "8001:8001"
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  mongodb_data:
+
+networks:
+  default:
+    name: mindsync-network

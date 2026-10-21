@@ -1,0 +1,215 @@
+# MindSync AI - Single VM Production Deployment
+# ==============================================
+# Runs everything on one VM (Standard D2as v4: 2 vCPU, 8 GB RAM)
+# Services: nginx (80/443) -> frontend, backend, inference
+# All data persisted in Docker volumes
+#
+# Deploy: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  # ----------------------------------------------------------
+  # Nginx Reverse Proxy + SSL Termination
+  # ----------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: mindsync-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - mindsync
+
+  # ----------------------------------------------------------
+  # Frontend - React + Nginx (served via main nginx proxy)
+  # ----------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: mindsync-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - mindsync
+
+  # ----------------------------------------------------------
+  # Backend - Django API
+  # ----------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: mindsync-backend
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      # Core
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=False
+      - ALLOWED_HOSTS=.localhost,127.0.0.1,${DOMAIN}
+      # Database
+      - MONGO_DB_URI=mongodb://mongodb:27017
+      - MONGO_DB_NAME=emotion_based_music_db
+      # JWT (shared with inference)
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - JWT_ACCESS_TOKEN_DAYS=7
+      - JWT_REFRESH_TOKEN_DAYS=14
+      # WebAuthn
+      - WEBAUTHN_RP_ID=${DOMAIN}
+      - WEBAUTHN_RP_NAME=MindSync AI
+      - WEBAUTHN_EXPECTED_ORIGINS=https://${DOMAIN}
+      - WEBAUTHN_CHALLENGE_TTL_SECONDS=300
+      # Inference service (internal)
+      - MODAL_INFERENCE_URL=http://inference:8001
+      - MODAL_SERVICE_TOKEN=${MODAL_SERVICE_TOKEN}
+      # CORS
+      - CORS_ALLOW_ALL_ORIGINS=False
+      - CORS_ALLOWED_ORIGINS=https://${DOMAIN}
+      # Throttling
+      - THROTTLE_ANON=60/min
+      - THROTTLE_USER=240/min
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - mindsync
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # ----------------------------------------------------------
+  # Inference - FastAPI ML Service (CPU)
+  # ----------------------------------------------------------
+  inference:
+    build:
+      context: ./modal_inference
+      dockerfile: Dockerfile.prod
+    container_name: mindsync-inference
+    restart: unless-stopped
+    expose:
+      - "8001"
+    environment:
+      # Model weights
+      - HF_TEXT_MODEL_REPO=${HF_TEXT_MODEL_REPO}
+      - HF_TOKEN=${HF_TOKEN:-}
+      # Auth (shared with backend)
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - MODAL_SERVICE_TOKEN=${MODAL_SERVICE_TOKEN}
+      # CORS (frontend domain)
+      - ALLOWED_ORIGINS=https://${DOMAIN}
+      # Metrics
+      - METRICS_ENABLED=1
+      - MONGO_DB_URI=mongodb://mongodb:27017
+      - MONGO_DB_NAME=emotion_based_music_db
+      - METRICS_COLLECTION=inference_metrics
+      - METRICS_TTL_DAYS=30
+      # Caching
+      - CACHE_DEEZER_TTL=3600
+      - CACHE_DEEZER_MAX=256
+      - CACHE_TEXT_TTL=86400
+      - CACHE_TEXT_MAX=2048
+      - CACHE_MEDIA_TTL=21600
+      - CACHE_MEDIA_MAX=256
+      # Rate limiting
+      - RATE_LIMIT_ENABLED=1
+      - RATE_LIMIT_PER_USER=45
+      - RATE_LIMIT_MEDIA_PER_USER=15
+      - RATE_LIMIT_WINDOW=60
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+      start_period: 180s  # Model download time
+    networks:
+      - mindsync
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+        reservations:
+          memory: 3G
+
+  # ----------------------------------------------------------
+  # MongoDB - Single instance with persistence
+  # ----------------------------------------------------------
+  mongodb:
+    image: mongo:7.0
+    container_name: mindsync-mongodb
+    restart: unless-stopped
+    command: mongod --wiredTigerCacheSizeGB=1 --maxConns=500
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    environment:
+      - MONGO_INITDB_DATABASE=emotion_based_music_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - mindsync
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # ----------------------------------------------------------
+  # Certbot - Automatic Let's Encrypt SSL
+  # ----------------------------------------------------------
+  certbot:
+    image: certbot/certbot
+    container_name: mindsync-certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - mindsync
+
+volumes:
+  mongodb_data:
+  mongodb_config:
+
+networks:
+  mindsync:
+    driver: bridge

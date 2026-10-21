@@ -1,0 +1,345 @@
+/* ============================================================
+   MindSync AI -- global design system
+   Warm amber palette on frosted glass. Light and dark mode both
+   read from the same CSS custom properties; toggling the body
+   class re-points the variables and the whole app re-tints.
+   ============================================================ */
+
+:root {
+  /* Amber ramp */
+  --ms-amber-100: #fef3c7;
+  --ms-amber-200: #fde68a;
+  --ms-amber-300: #fcd34d;
+  --ms-amber-400: #fbbf24;
+  --ms-amber-500: #f59e0b;
+  --ms-amber-600: #d97706;
+  --ms-amber-700: #b45309;
+  --ms-amber-800: #92400e;
+
+  /* Surfaces */
+  --ms-page: #fdf8ec;
+  --ms-glass: rgba(255, 255, 255, 0.55);
+  --ms-glass-strong: rgba(255, 255, 255, 0.74);
+  --ms-glass-border: rgba(255, 255, 255, 0.65);
+  --ms-glass-hairline: rgba(146, 64, 14, 0.12);
+
+  /* Ink */
+  --ms-text: #241d11;
+  --ms-text-soft: #6e6250;
+  --ms-accent: #d97706;
+  --ms-accent-ink: #221b10;
+
+  /* Effects */
+  --ms-blur: blur(22px) saturate(165%);
+  --ms-shadow: 0 10px 34px rgba(146, 64, 14, 0.12);
+  --ms-shadow-soft: 0 2px 10px rgba(146, 64, 14, 0.08);
+  --ms-accent-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+
+  /* Dock geometry (consumed by BottomDock + layout padding) */
+  --ms-dock-height: 84px;
+}
+
+body.dark-mode {
+  --ms-page: #16120a;
+  --ms-glass: rgba(46, 38, 22, 0.55);
+  --ms-glass-strong: rgba(38, 31, 17, 0.74);
+  --ms-glass-border: rgba(253, 211, 77, 0.14);
+  --ms-glass-hairline: rgba(253, 211, 77, 0.1);
+
+  --ms-text: #f6efdf;
+  --ms-text-soft: #a99b80;
+  --ms-accent: #fbbf24;
+  --ms-accent-ink: #1d1608;
+
+  --ms-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  --ms-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--ms-page);
+  color: var(--ms-text);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+h2,
+h4,
+h6 {
+  color: var(--ms-text);
+}
+
+/* ---- Frosted-glass surfaces -------------------------------------- */
+
+/* Every MUI Paper (Card, Dialog, Menu, Drawer,Popover) is frosted glass.
+   styles.css outranks the emotion class from theme.js via body-mode
+   specificity, so no !important is needed for the light/dark split. */
+body .MuiPaper-root {
+  background-color: var(--ms-glass-strong) !important;
+  background-image: none !important;
+  backdrop-filter: var(--ms-blur);
+  -webkit-backdrop-filter: var(--ms-blur);
+  border: 1px solid var(--ms-glass-border);
+  box-shadow: var(--ms-shadow);
+}
+
+/* Raw glass panel helper for hand-rolled sections. */
+.ms-glass {
+  background-color: var(--ms-glass);
+  background-image: none;
+  backdrop-filter: var(--ms-blur);
+  -webkit-backdrop-filter: var(--ms-blur);
+  border: 1px solid var(--ms-glass-border);
+  box-shadow: var(--ms-shadow-soft);
+}
+
+/* ---- Controls ----------------------------------------------------- */
+
+/* Element-level rules for plain/native controls only; the :not([class*=
+   "Mui"]) exclusion keeps MUI's inner inputs on the theme instead. */
+button {
+  font-family: inherit;
+  background: var(--ms-accent-gradient);
+  color: var(--ms-accent-ink);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.25);
+}
+
+input:not([class*="Mui"]),
+textarea:not([class*="Mui"]) {
+  border: 1px solid var(--ms-glass-hairline);
+  border-radius: 12px;
+  padding: 10px;
+  background-color: var(--ms-glass);
+  color: var(--ms-text);
+  backdrop-filter: var(--ms-blur);
+  -webkit-backdrop-filter: var(--ms-blur);
+  transition: border-color 0.3s ease;
+}
+
+input:not([class*="Mui"]):focus,
+textarea:not([class*="Mui"]):focus {
+  border-color: var(--ms-accent);
+  outline: none;
+}
+
+/* Plain-content anchors only (MUI links keep their emotion colour). */
+body a:not([class*="Mui"]) {
+  color: var(--ms-accent);
+}
+
+/* Scrollbars -- warm, thin, glass-friendly. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 119, 6, 0.35) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.35);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- Motion ------------------------------------------------------- */
+
+.hero-button:hover {
+  transform: scale(1.04);
+  transition: transform 0.3s ease-in-out;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  transition: transform 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes floatSoft {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(14px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes msMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.pulse-animation {
+  animation: pulse 1.5s infinite;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Scroll reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 0.08s;
+}
+
+.reveal-delay-2 {
+  transition-delay: 0.16s;
+}
+
+.reveal-delay-3 {
+  transition-delay: 0.24s;
+}
+
+.reveal-delay-4 {
+  transition-delay: 0.32s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---- App shell ---------------------------------------------------- */
+
+/* Sticky-footer scaffold: the shell is a full-viewport flex column, the
+   main area grows to absorb spare height so the footer stays pinned to
+   the bottom even before a route renders. */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Reserve room for the floating bottom dock so it never covers the
+   footer or the last line of page content. */
+.app-shell.has-dock .app-main {
+  padding-bottom: var(--ms-dock-height);
+}
+
+.app-main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main .page-anim {
+  flex: 1 0 auto;
+}
+
+/* Route page transitions: pages fade + slide in/out via SwitchTransition. */
+/* NOTE: `will-change` is applied ONLY during the active transition phases,
+   not on the resting `.page-anim` -- a persistent `will-change: transform`
+   traps position:fixed descendants below portalled MUI modals. */
+
+.page-enter,
+.page-appear {
+  opacity: 0;
+  transform: translateY(30px);
+  will-change: transform, opacity;
+}
+
+.page-enter-active,
+.page-appear-active {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: transform, opacity;
+  transition:
+    opacity 0.48s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* No transform at rest so position:fixed descendants behave normally. */
+.page-enter-done,
+.page-appear-done {
+  transform: none;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(30px);
+  will-change: transform, opacity;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-anim,
+  .page-enter,
+  .page-enter-active,
+  .page-appear,
+  .page-appear-active,
+  .page-exit,
+  .page-exit-active {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
