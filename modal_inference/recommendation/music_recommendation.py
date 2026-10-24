@@ -22,7 +22,7 @@ import urllib.parse
 
 import requests
 
-from recommendation import deezer, personalization
+from recommendation import deezer, hindi_tracks, personalization
 
 logger = logging.getLogger(__name__)
 
@@ -184,29 +184,28 @@ def get_music_recommendation(
     market: str | None = None,
     history: list[str] | None = None,
     genre: str | None = None,
+    language: str | None = "all",
 ) -> list[dict]:
     """Return mood-matched tracks for the given emotion.
 
+    Supports recommending Hindi songs alongside English:
+      - ``language="all"`` (default): interleaves mood-matched English and Hindi songs.
+      - ``language="hindi"``: returns mood-matched Hindi songs.
+      - ``language="english"``: returns mood-matched English songs.
+
     When ``history`` (recent detected moods) is supplied, a lightweight
-    personalization model blends in tracks for the user's recurring mood
-    and quality-ranks the result, so recommendations reflect both the
-    moment and the longer-term pattern. Without history the live result
-    order is returned unchanged.
-
-    When ``genre`` (e.g. "hip-hop", "lofi") is supplied, it is prepended
-    to the Deezer search phrase so the result skews toward that genre.
-    Both the primary search and the personalization blend share the genre
-    bias so the mix stays coherent.
-
-    The ``market`` argument is accepted for API compatibility with the
-    previous Spotify path but is unused -- Deezer's search endpoint does
-    not take a market.
+    personalization model blends in tracks for the user's recurring mood.
+    When ``genre`` is supplied, it is applied to the search query.
 
     Returns up to _MAX_RESULTS de-duplicated tracks. The list is ALWAYS
-    non-empty: on any Deezer failure it returns a curated fallback set,
-    so a caller never surfaces an error or an empty result.
+    non-empty: on any Deezer failure or geo-restriction it returns a rich,
+    curated mood-matched set with both Hindi and English tracks.
     """
     del market  # noqa -- interface parity only
+
+    lang = (language or "all").strip().lower()
+    if (genre or "").strip().lower() in ("bollywood", "hindi"):
+        lang = "hindi"
 
     try:
         primary_query = _query_with_genre(_query_for(emotion), genre)
@@ -215,16 +214,31 @@ def get_music_recommendation(
         if history:
             primary = _personalize(emotion, history, primary, genre)
 
+        for t in primary:
+            t.setdefault("language", "english")
+
         if len(primary) >= _MIN_USABLE_TRACKS:
-            return primary[:_MAX_RESULTS]
-        if primary:
-            return primary
+            if lang == "hindi":
+                return hindi_tracks.get_hindi_tracks(emotion, limit=_MAX_RESULTS)
+            elif lang == "english":
+                return primary[:_MAX_RESULTS]
+            else:
+                # "all": Recommend Hindi songs alongside English live hits
+                hindi_hits = hindi_tracks.get_hindi_tracks(emotion, limit=30)
+                return hindi_tracks.interleave_tracks(primary, hindi_hits, limit=_MAX_RESULTS)
     except requests.RequestException as exc:
-        # Defensive: the Deezer client already swallows RequestException
-        # internally, but personalize() could in principle raise a new one.
         logger.warning("Live recommendation failed for emotion=%s: %s", emotion, exc)
     except Exception:  # noqa: BLE001
         logger.exception("Unexpected recommendation error for emotion=%s", emotion)
 
-    # Last resort -- always hand back something listenable.
-    return _fallback_recommendations()
+    # Curated fallback recommendations when Deezer is unavailable or empty
+    if lang == "hindi":
+        return hindi_tracks.get_hindi_tracks(emotion, limit=_MAX_RESULTS)
+    elif lang == "english":
+        return hindi_tracks.get_english_fallback_tracks(emotion, limit=_MAX_RESULTS)
+    else:
+        # Default: Curated blend of English + Hindi songs matched to the detected emotion
+        eng = hindi_tracks.get_english_fallback_tracks(emotion, limit=30)
+        hin = hindi_tracks.get_hindi_tracks(emotion, limit=30)
+        return hindi_tracks.interleave_tracks(eng, hin, limit=_MAX_RESULTS)
+

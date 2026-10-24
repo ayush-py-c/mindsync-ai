@@ -15,7 +15,9 @@ echo "HF Repo: ${HF_TEXT_MODEL_REPO:-not set}"
 
 mkdir -p "${TEXT_EMOTION_DIR}"
 
-if [[ -n "${HF_TEXT_MODEL_REPO:-}" ]]; then
+if [[ "${SKIP_TEXT_MODEL:-0}" == "1" ]]; then
+    echo "Skipping text emotion model download (SKIP_TEXT_MODEL=1)"
+elif [[ -n "${HF_TEXT_MODEL_REPO:-}" ]]; then
     if [[ ! -f "${TEXT_EMOTION_DIR}/model.safetensors" ]]; then
         echo "Downloading model from HF..."
         python3 - <<'PYEOF'
@@ -50,6 +52,6 @@ else
 fi
 
 echo "Starting uvicorn on ${HOST:-0.0.0.0}:${PORT:-8001}"
-exec uvicorn service:create_app \
+exec python -m uvicorn service:create_app \
     --host "${HOST:-0.0.0.0}" --port "${PORT:-8001}" \
     --workers 1 --factory --log-level info

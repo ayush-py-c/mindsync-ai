@@ -26,6 +26,8 @@ class MusicRecommendationRequest(BaseModel):
     # phrase so the result skews toward that genre while still honouring
     # the mood.
     genre: Optional[str] = Field(default=None, max_length=40)
+    # Language preference: "all" (interleaved Hindi & English), "hindi", or "english".
+    language: Optional[str] = Field(default="all", max_length=20)
 
 
 class Track(BaseModel):
@@ -39,6 +41,8 @@ class Track(BaseModel):
     popularity: int = 0
     duration_ms: int = 0
     release_date: Optional[str] = None
+    # Track language: "hindi" or "english"
+    language: Optional[str] = "english"
 
 
 class EmotionResponse(BaseModel):

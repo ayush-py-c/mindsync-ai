@@ -85,6 +85,12 @@ _MUSIC_BODY = _obj(
             example=["sadness", "sadness", "joy"],
             description="Recent moods (oldest first). Used to blend recurring-mood tracks into the result. Max 50 entries — extras are ignored.",
         ),
+        "language": openapi.Schema(
+            type=openapi.TYPE_STRING,
+            nullable=True,
+            example="all",
+            description="Language filter: 'all' (Hindi & English interleaved), 'hindi', or 'english'.",
+        ),
     },
     required=["emotion"],
 )
@@ -224,6 +230,7 @@ def music_recommendation(request):
     market = request.data.get("market") if request.data else None
     history = (request.data.get("history") or []) if request.data else []
     genre = (request.data.get("genre") or None) if request.data else None
+    language = (request.data.get("language") or "all") if request.data else "all"
     if not emotion:
         return Response({"error": "No emotion provided"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -236,8 +243,14 @@ def music_recommendation(request):
     if genre is not None and not isinstance(genre, str):
         genre = None
 
+    if not isinstance(language, str):
+        language = "all"
+
     try:
-        result = modal_music(emotion, market, history, genre)
+        try:
+            result = modal_music(emotion, market, history, genre, language=language)
+        except TypeError:
+            result = modal_music(emotion, market, history, genre)
     except InferenceServiceError:
         logger.exception("music_recommendation proxy call failed")
         return Response(_BAD_GATEWAY, status=status.HTTP_502_BAD_GATEWAY)

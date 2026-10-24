@@ -59,6 +59,7 @@ export function getRecommendations({
   market,
   history,
   genre,
+  language,
   token = null,
 }) {
   const payload = {
@@ -70,6 +71,7 @@ export function getRecommendations({
   };
   if (market) payload.market = market;
   if (genre) payload.genre = genre;
+  if (language) payload.language = language;
 
   const cfg = maybeAuth(token);
   if (isAuthenticated()) {

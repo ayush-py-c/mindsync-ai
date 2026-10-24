@@ -74,6 +74,7 @@ import { getRecommendations } from "../services/recommend";
 // Tints are used for the leading icon tile in the genre menu.
 const GENRES = [
   { key: "", label: "Any genre", icon: AllInclusive, tint: "#a99a7f" },
+  { key: "bollywood", label: "Bollywood / Hindi", icon: MusicNote, tint: "#f59e0b" },
   { key: "pop", label: "Pop", icon: Whatshot, tint: "#f59e0b" },
   { key: "hip-hop", label: "Hip-Hop", icon: GraphicEq, tint: "#d97706" },
   { key: "rock", label: "Rock", icon: MusicNote, tint: "#f59e0b" },
@@ -251,6 +252,8 @@ const ResultsPage = () => {
   const [marketAnchor, setMarketAnchor] = useState(null);
   const [moodAnchor, setMoodAnchor] = useState(null);
   const [genreAnchor, setGenreAnchor] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [languageAnchor, setLanguageAnchor] = useState(null);
 
   // Persisted like/dislike: { trackId: "like" | "unlike" }. Hydrated from
   // the backend whenever the track set changes so a thumbs-up survives
@@ -261,7 +264,7 @@ const ResultsPage = () => {
   // a fresh query doesn't dump a tiny filtered set inside a 12-row window.
   useEffect(() => {
     setVisible(PAGE);
-  }, [query]);
+  }, [query, selectedLanguage]);
 
   // Hydrate persisted like/dislike state whenever the track set changes
   // (initial load, mood/market/genre refetch, shuffle). Merges so a vote
@@ -280,16 +283,32 @@ const ResultsPage = () => {
   }, [tracks]);
 
   const palette = useMemo(() => paletteFor(selectedMood), [selectedMood]);
+
+  const languageFiltered = useMemo(() => {
+    if (!tracks || tracks.length === 0) return [];
+    if (selectedLanguage === "hindi") {
+      return tracks.filter(
+        (t) => (t.language || "").toLowerCase() === "hindi",
+      );
+    }
+    if (selectedLanguage === "english") {
+      return tracks.filter(
+        (t) => (t.language || "").toLowerCase() !== "hindi",
+      );
+    }
+    return tracks;
+  }, [tracks, selectedLanguage]);
+
   const filteredTracks = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return tracks;
-    return tracks.filter((t) => {
+    if (!q) return languageFiltered;
+    return languageFiltered.filter((t) => {
       const name = String(t.name || "").toLowerCase();
       const artist = String(t.artist || "").toLowerCase();
       const album = String(t.album || "").toLowerCase();
       return name.includes(q) || artist.includes(q) || album.includes(q);
     });
-  }, [tracks, query]);
+  }, [languageFiltered, query]);
   // Even before the Modal recommender redeploys with the new `genre`
   // query bias, we partition the visible list client-side so the
   // dropdown gives instant feedback: tracks whose title / album / artist
@@ -366,6 +385,7 @@ const ResultsPage = () => {
         market: (overrides.market ?? selectedMarket) || undefined,
         history: moodHistory.slice(-50),
         genre: (overrides.genre ?? selectedGenre) || undefined,
+        language: overrides.language ?? selectedLanguage,
       });
       setTracks(res.data.recommendations || []);
       setVisible(PAGE);
@@ -390,6 +410,11 @@ const ResultsPage = () => {
     setGenreAnchor(null);
     setSelectedGenre(genre);
     refetch({ genre });
+  };
+  const onLanguagePick = (lang) => {
+    setLanguageAnchor(null);
+    setSelectedLanguage(lang);
+    refetch({ language: lang });
   };
   const onTrackOpen = (track) => {
     if (profileId) logTrackOpen(profileId, track);
@@ -426,6 +451,12 @@ const ResultsPage = () => {
   const activeGenre = GENRES.find((g) => g.key === selectedGenre) || GENRES[0];
   const genreLabel = activeGenre.label;
   const GenreIcon = activeGenre.icon || Category;
+  const languageLabel =
+    selectedLanguage === "hindi"
+      ? "Language: Hindi 🇮🇳"
+      : selectedLanguage === "english"
+        ? "Language: English 🌐"
+        : "Language: All";
 
   const styles = getStyles(isDarkMode, palette);
 
@@ -568,6 +599,13 @@ const ResultsPage = () => {
               disabled={loading || initializing}
               isDark={isDarkMode}
             />
+            <Pill
+              icon={<Public fontSize="small" sx={{ color: "#f59e0b" }} />}
+              label={languageLabel}
+              onClick={(e) => setLanguageAnchor(e.currentTarget)}
+              disabled={loading || initializing}
+              isDark={isDarkMode}
+            />
             <Button
               startIcon={
                 loading ? (
@@ -684,6 +722,44 @@ const ResultsPage = () => {
             </MenuItem>
           );
         })}
+      </Menu>
+
+      <Menu
+        anchorEl={languageAnchor}
+        open={Boolean(languageAnchor)}
+        onClose={() => setLanguageAnchor(null)}
+        slotProps={{ paper: { sx: styles.menuPaper } }}
+      >
+        <MenuItem
+          selected={selectedLanguage === "all"}
+          onClick={() => onLanguagePick("all")}
+          sx={styles.menuItem}
+        >
+          <Box sx={styles.menuIcon}>
+            <Public fontSize="small" sx={{ color: "#f59e0b" }} />
+          </Box>
+          All (Hindi & English)
+        </MenuItem>
+        <MenuItem
+          selected={selectedLanguage === "hindi"}
+          onClick={() => onLanguagePick("hindi")}
+          sx={styles.menuItem}
+        >
+          <Box sx={styles.menuIcon}>
+            <span style={{ fontSize: 16 }}>🇮🇳</span>
+          </Box>
+          Hindi Songs
+        </MenuItem>
+        <MenuItem
+          selected={selectedLanguage === "english"}
+          onClick={() => onLanguagePick("english")}
+          sx={styles.menuItem}
+        >
+          <Box sx={styles.menuIcon}>
+            <span style={{ fontSize: 16 }}>🌐</span>
+          </Box>
+          English Songs
+        </MenuItem>
       </Menu>
 
       {/* Tracks ----------------------------------------------------------- */}
@@ -1005,20 +1081,61 @@ function TrackRow({
           sx={{ mb: 0.5 }}
         >
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography
-              title={track.name}
-              sx={{
-                fontFamily: "Poppins",
-                fontWeight: 800,
-                fontSize: 15,
-                color: isDark ? "#fff" : "#1a1a1a",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {track.name || "Untitled"}
-            </Typography>
+            <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mb: 0.25 }}>
+              <Typography
+                title={track.name}
+                sx={{
+                  fontFamily: "Poppins",
+                  fontWeight: 800,
+                  fontSize: 15,
+                  color: isDark ? "#fff" : "#1a1a1a",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {track.name || "Untitled"}
+              </Typography>
+              {track.language === "hindi" ? (
+                <Box
+                  component="span"
+                  sx={{
+                    fontSize: "10.5px",
+                    fontWeight: 700,
+                    fontFamily: "Poppins",
+                    px: 0.75,
+                    py: 0.2,
+                    borderRadius: "4px",
+                    background: "rgba(245, 158, 11, 0.2)",
+                    color: "#f59e0b",
+                    border: "1px solid rgba(245, 158, 11, 0.4)",
+                    flexShrink: 0,
+                  }}
+                >
+                  Hindi 🇮🇳
+                </Box>
+              ) : (
+                <Box
+                  component="span"
+                  sx={{
+                    fontSize: "10.5px",
+                    fontWeight: 700,
+                    fontFamily: "Poppins",
+                    px: 0.75,
+                    py: 0.2,
+                    borderRadius: "4px",
+                    background: isDark
+                      ? "rgba(59, 130, 246, 0.2)"
+                      : "rgba(59, 130, 246, 0.12)",
+                    color: isDark ? "#60a5fa" : "#2563eb",
+                    border: "1px solid rgba(59, 130, 246, 0.35)",
+                    flexShrink: 0,
+                  }}
+                >
+                  English
+                </Box>
+              )}
+            </Stack>
             <Typography
               title={track.artist}
               sx={{

@@ -16,7 +16,7 @@ from django.urls import path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-from .api_docs import SCHEMA_HEADER, MindSync AISchemaGenerator
+from .api_docs import SCHEMA_HEADER, MindSyncAISchemaGenerator
 
 # --- Schema generator -----------------------------------------------------
 schema_view = get_schema_view(
@@ -33,7 +33,7 @@ schema_view = get_schema_view(
         license=openapi.License(name="MIT License"),
     ),
     public=True,
-    generator_class=MindSync AISchemaGenerator,
+    generator_class=MindSyncAISchemaGenerator,
 )
 
 # --- CDN assets -----------------------------------------------------------

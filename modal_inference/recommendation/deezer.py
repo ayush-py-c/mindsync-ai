@@ -77,6 +77,7 @@ def _parse_track(item: dict) -> dict | None:
         "popularity": _normalize_popularity(item.get("rank")),
         "duration_ms": int(item.get("duration") or 0) * 1000,
         "release_date": None,
+        "language": "english",
     }
 
 

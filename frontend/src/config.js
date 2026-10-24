@@ -13,10 +13,32 @@
 
 const stripTrailingSlash = (url) => (url || "").replace(/\/+$/, "");
 
-export const API_URL =
-  stripTrailingSlash(process.env.REACT_APP_API_URL) ||
-  "https://mindsync-ai-backend-api.vercel.app";
+export const API_URL = (() => {
+  if (process.env.REACT_APP_API_URL !== undefined) {
+    return stripTrailingSlash(process.env.REACT_APP_API_URL);
+  }
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname &&
+    !window.location.hostname.endsWith("vercel.app") &&
+    window.location.hostname !== "localhost"
+  ) {
+    return "";
+  }
+  return "https://mindsync-ai-backend-api.vercel.app";
+})();
 
-export const MODAL_API_URL =
-  stripTrailingSlash(process.env.REACT_APP_MODAL_API_URL) ||
-  "https://ayush-py-c--mindsync-ai-inference-inferenceservice-web.modal.run";
+export const MODAL_API_URL = (() => {
+  if (process.env.REACT_APP_MODAL_API_URL !== undefined) {
+    return stripTrailingSlash(process.env.REACT_APP_MODAL_API_URL);
+  }
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname &&
+    !window.location.hostname.endsWith("vercel.app") &&
+    window.location.hostname !== "localhost"
+  ) {
+    return "";
+  }
+  return "https://ayush-py-c--mindsync-ai-inference-inferenceservice-web.modal.run";
+})();

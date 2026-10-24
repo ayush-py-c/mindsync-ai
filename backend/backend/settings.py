@@ -62,13 +62,14 @@ _MONGO_KWARGS = dict(
     retryWrites=True,
 )
 if _MONGO_URI:
+    _mongo_ssl = config("MONGO_SSL", default=False, cast=bool)
     connect(
         db=config("MONGO_DB_NAME", default="emotion_based_music_db"),
         host=_MONGO_URI,
         username=config("MONGO_DB_USERNAME", default=None),
         password=config("MONGO_DB_PASSWORD", default=None),
         authentication_source="admin",
-        ssl=True,
+        ssl=_mongo_ssl,
         **_MONGO_KWARGS,
     )
 else:

@@ -318,7 +318,7 @@ Both are tuned to never bite a real user -- only retry loops and scripted abuse 
 # ---------------------------------------------------------------------------
 # Schema generator -- injects per-tag descriptions into the output
 # ---------------------------------------------------------------------------
-class MindSync AISchemaGenerator(OpenAPISchemaGenerator):
+class MindSyncAISchemaGenerator(OpenAPISchemaGenerator):
     """Attach a description to every tag in the generated schema.
 
     drf-yasg picks up tag *names* automatically from each endpoint's

@@ -31,10 +31,26 @@ const Recommendations = ({ recommendations }) => {
                 </Box>
 
                 {/* Right Half: Song Details */}
-                <CardContent sx={styles.cardDetails}>
-                  <Typography variant="subtitle1" style={styles.songTitle}>
-                    {rec.name}
-                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography variant="subtitle1" style={styles.songTitle}>
+                      {rec.name}
+                    </Typography>
+                    {rec.language === "hindi" && (
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                          background: "rgba(245, 158, 11, 0.2)",
+                          color: "#f59e0b",
+                          border: "1px solid rgba(245, 158, 11, 0.4)",
+                        }}
+                      >
+                        Hindi 🇮🇳
+                      </span>
+                    )}
+                  </Box>
                   <Typography variant="body2" style={styles.artistName}>
                     {rec.artist}
                   </Typography>

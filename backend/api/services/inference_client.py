@@ -63,12 +63,14 @@ def music_recommendation(
     market: str | None = None,
     history: list[str] | None = None,
     genre: str | None = None,
+    language: str | None = "all",
 ) -> dict:
     """Proxy a music-recommendation request."""
     payload: dict = {
         "emotion": emotion,
         "market": market,
         "history": history or [],
+        "language": language or "all",
     }
     # Only forward genre when set; Modal treats the field as optional but
     # avoids an extra null hop when we don't have a value.

@@ -516,10 +516,10 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
         if degraded:
             # Surfaced for the metrics middleware -- not part of the
             # public response contract.
-            response.headers["X-MindSync AI-Degraded"] = "1"
+            response.headers["X-MindSync-AI-Degraded"] = "1"
         return EmotionResponse(
             emotion=emotion,
-            recommendations=get_music_recommendation(emotion),
+            recommendations=get_music_recommendation(emotion, language="all"),
             degraded=degraded,
         )
 
@@ -527,12 +527,18 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
     def music_recommendation(
         body: MusicRecommendationRequest, _ctx: dict = Depends(require_auth_and_quota)
     ):
+        try:
+            recs = get_music_recommendation(
+                body.emotion, body.market, body.history, body.genre, language=body.language
+            )
+        except TypeError:
+            recs = get_music_recommendation(
+                body.emotion, body.market, body.history, body.genre
+            )
         return EmotionResponse(
             emotion=body.emotion,
             market=body.market,
-            recommendations=get_music_recommendation(
-                body.emotion, body.market, body.history, body.genre
-            ),
+            recommendations=recs,
         )
 
     def _infer_from_upload(
@@ -592,10 +598,10 @@ def build_app(text_model, speech_model, facial_model) -> FastAPI:
                     media_cache.set(content_key, emotion)
 
         if degraded and response is not None:
-            response.headers["X-MindSync AI-Degraded"] = "1"
+            response.headers["X-MindSync-AI-Degraded"] = "1"
         return EmotionResponse(
             emotion=emotion,
-            recommendations=get_music_recommendation(emotion),
+            recommendations=get_music_recommendation(emotion, language="all"),
             degraded=degraded,
         )
 

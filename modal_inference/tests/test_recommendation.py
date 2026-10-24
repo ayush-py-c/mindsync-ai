@@ -139,9 +139,30 @@ def test_recommendations_come_from_deezer(monkeypatch):
         )
 
     monkeypatch.setattr(requests, "get", fake_get)
-    recs = mr.get_music_recommendation("joy")
+    recs = mr.get_music_recommendation("joy", language="english")
     assert [r["name"] for r in recs] == [f"Joy{i}" for i in range(6)]
     assert recs[0]["external_url"].startswith("https://www.deezer.com/track/")
+
+    # "all" blends Hindi alongside English
+    blended = mr.get_music_recommendation("joy", language="all")
+    assert any(r["name"] == "Joy0" for r in blended)
+    assert any(r.get("language") == "hindi" for r in blended)
+    assert any(r.get("language") == "english" for r in blended)
+
+
+def test_hindi_recommendations():
+    recs = mr.get_music_recommendation("joy", language="hindi")
+    assert len(recs) > 0
+    assert all(r.get("language") == "hindi" for r in recs)
+    assert any("Badtameez" in r["name"] for r in recs)
+
+
+def test_interleaved_hindi_and_english_recommendations():
+    recs = mr.get_music_recommendation("sadness", language="all")
+    assert len(recs) > 0
+    languages = [r.get("language") for r in recs]
+    assert "hindi" in languages
+    assert "english" in languages
 
 
 def test_market_argument_is_accepted_for_back_compat(monkeypatch):
@@ -150,7 +171,7 @@ def test_market_argument_is_accepted_for_back_compat(monkeypatch):
         return _FakeResponse({"data": [_deezer_track("Track")]})
 
     monkeypatch.setattr(requests, "get", fake_get)
-    recs = mr.get_music_recommendation("joy", market="US")
+    recs = mr.get_music_recommendation("joy", market="US", language="english")
     assert len(recs) == 1
 
 
@@ -213,7 +234,7 @@ def test_history_of_only_the_current_mood_does_not_blend(monkeypatch):
 
     monkeypatch.setattr(requests, "get", fake_get)
 
-    recs = mr.get_music_recommendation("joy", history=["joy", "happy"])
+    recs = mr.get_music_recommendation("joy", history=["joy", "happy"], language="english")
     assert all(r["name"].startswith("Joy") for r in recs)
 
 
@@ -227,5 +248,5 @@ def test_history_blend_failure_keeps_current_mood_result(monkeypatch):
 
     monkeypatch.setattr(requests, "get", fake_get)
 
-    recs = mr.get_music_recommendation("joy", history=["sadness", "sadness"])
+    recs = mr.get_music_recommendation("joy", history=["sadness", "sadness"], language="english")
     assert [r["name"] for r in recs] == [f"Joy{i}" for i in range(6)]

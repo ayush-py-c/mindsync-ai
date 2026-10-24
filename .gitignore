@@ -17,6 +17,8 @@
 .env.production.local
 .env.production
 /mobile/node_modules/
+*.pem
+mindsync_key.pem
 
 # Python build / test artifacts
 __pycache__/

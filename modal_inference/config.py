@@ -24,7 +24,10 @@ SECRET_NAME = "mindsync-ai-secrets"
 
 # --- Filesystem (inside the container) ------------------------------------
 # Bundled in the image (see modal_app.py add_local_dir).
-ASSETS_DIR = "/assets"
+ASSETS_DIR = os.getenv(
+    "ASSETS_DIR",
+    "/assets" if os.path.isdir("/assets") else os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+)
 SPEECH_MODEL_PATH = os.path.join(ASSETS_DIR, "speech_emotion_model", "trained_speech_emotion_model.pkl")
 SPEECH_SCALER_PATH = os.path.join(ASSETS_DIR, "speech_emotion_model", "scaler.pkl")
 TEXT_ASSETS_DIR = os.path.join(ASSETS_DIR, "text_emotion_model")
